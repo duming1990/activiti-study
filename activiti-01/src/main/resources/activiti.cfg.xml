@@ -1,0 +1,36 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql:///activiti?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=GMT%2B8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+        <property name="maxActive" value="3"/>
+        <property name="maxIdle" value="1"/>
+     </bean>
+
+
+    <!-- activiti默认配置ben的id固定为processEngineConfiguration-->
+    <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
+        <!-- 配置数据库信息
+        <property name="jdbcUrl" value="jdbc:mysql:///activiti?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=GMT%2B8" />
+        <property name="jdbcDriver" value="com.mysql.cj.jdbc.Driver" />
+        <property name="jdbcUsername" value="root" />
+        <property name="jdbcPassword" value="123456" />
+        -->
+
+        <!--直接引用上面配置的连接池信息-->
+        <property name="dataSource" ref="dataSource"/>
+
+        <!-- activiti数据库表的生成策略 true:表存在则使用，不存在则新建-->
+        <property name="databaseSchemaUpdate" value="true" />
+
+        <property name="asyncExecutorActivate" value="false" />
+
+        <property name="mailServerHost" value="mail.my-corp.com" />
+        <property name="mailServerPort" value="5025" />
+    </bean>
+
+</beans>

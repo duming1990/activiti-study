@@ -2,6 +2,8 @@ package com.duming;
 
 import org.activiti.engine.*;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.junit.Test;
@@ -107,7 +109,7 @@ public class ActivitiDemo {
      */
     @Test
     public void deployProcessByZip(){
-        //1.创建ProcessEngine
+        //1.获取ProcessEngine
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         //2.获取RepositoryService
         RepositoryService repositoryService = processEngine.getRepositoryService();
@@ -122,6 +124,63 @@ public class ActivitiDemo {
 
         System.out.println("流程部署id："+deploy.getId());
         System.out.println("流程部署名称："+deploy.getName());
+
+    }
+
+    /**
+     *  查询流程定义
+     */
+    @Test
+    public void queryProcessDefinition(){
+        //1.获取流程引擎
+        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+        //2.获取RepositoryService
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+        //3.获取ProcessDefinitionQuery对象
+        ProcessDefinitionQuery definitionQuery = repositoryService.createProcessDefinitionQuery();
+        //4.查询当前的所有流程定义,返回流程定义信息的集合
+        List<ProcessDefinition> myEvection = definitionQuery.processDefinitionKey("myEvection")//processDefinitionKey(流程定义key)
+                .orderByProcessDefinitionVersion() //根据version排序
+                .desc()     //倒叙
+                .list();    //查出所有内容
+
+        for (ProcessDefinition processDefinition : myEvection) {
+            System.out.println("流程定义id："+processDefinition.getId());
+            System.out.println("流程定义名称："+processDefinition.getName());
+            System.out.println("流程定义key："+processDefinition.getKey());
+            System.out.println("流程定义版本："+processDefinition.getVersion());
+            System.out.println("流程部署id："+processDefinition.getDeploymentId());
+        }
+    }
+
+    /**
+     *  删除流程部署信息
+     *  act_ge_bytearray
+     *  act_re_deployment
+     *  act_re_procdef
+     *  如果流程已启用，但没有完成，想要删除的话需要使用特殊方式    级联删除
+     */
+    @Test
+    public void deleteDeployMent(){
+        //1.获取流程引擎
+        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+        //2.获取RepositoryService
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+        //3.通过部署id删除部署信息
+        String deploymentid="1";
+        repositoryService.deleteDeployment(deploymentid);
+        repositoryService.deleteDeployment(deploymentid, true);//级联删除
+    }
+
+    /**
+     *  下载 资源文件
+     *  方案1：使用Activiti提供的api
+     *  方案2：自己写代码从数据库中下载，使用jdbc 对blob类型，clob类型数据读取出来，保存到文件目录
+     *  解决io操作：commons-io.jar
+     *  这里使用方案1，RepositoryService
+     */
+    @Test
+    public void getDeployMent(){
 
     }
 }
